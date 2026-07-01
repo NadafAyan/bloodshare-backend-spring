@@ -4,6 +4,7 @@ import app.vercel.bloodshare.backend.entity.Donor;
 import app.vercel.bloodshare.backend.repository.DonorRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public class DonorService {
     public Donor getDonor(String email) {
         Optional<Donor> receivedDonor = donorRepository.findById(email);
 
-        if(receivedDonor.isEmpty()) {
+        if(receivedDonor.isEmpty() || receivedDonor.get().isSoft_delete()) {
             return null;
         }
 
@@ -32,7 +33,13 @@ public class DonorService {
 
     public List<Donor> getAllDonors() {
         List<Donor> donorsList = donorRepository.findAll();
-        return donorsList;
+        List<Donor> finalList = new ArrayList<>();
+        for(Donor donors : donorsList) {
+            if(!donors.isSoft_delete()) {
+                finalList.add(donors);
+            }
+        }
+        return finalList;
     }
 
     public Donor updateDonor(String email, Donor receivedDonor) {
@@ -67,6 +74,21 @@ public class DonorService {
 
         Optional<Donor> donor = donorRepository.findById(email);
         donorRepository.deleteById(email);
+
+        return donor.get();
+    }
+
+    public Donor softDelete(String email) {
+        boolean donorExists = donorRepository.existsById(email);
+
+        if(!donorExists) {
+            return null;
+        }
+
+        Optional<Donor> donor = donorRepository.findById(email);
+        Donor donorToSave = donor.get();
+        donorToSave.setSoft_delete(true);
+        donorRepository.save(donorToSave);
 
         return donor.get();
     }

@@ -27,6 +27,16 @@ public class Donor {
     private Long emergency_contact;
     @Column(name = "available")
     private boolean available;
+    @Column(name = "soft_delete")
+    private boolean soft_delete;
+
+    public boolean isSoft_delete() {
+        return soft_delete;
+    }
+
+    public void setSoft_delete(boolean soft_delete) {
+        this.soft_delete = soft_delete;
+    }
 
     public String getFull_name() {
         return full_name;

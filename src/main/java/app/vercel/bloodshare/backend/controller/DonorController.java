@@ -67,4 +67,15 @@ public class DonorController {
 
         return ResponseEntity.status(HttpStatus.OK).body(donor);
     }
+
+    @PatchMapping("/{email}/delete")
+    public ResponseEntity<Donor> softDelete(@PathVariable String email) {
+        Donor donor = donorService.softDelete(email);
+
+        if(donor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(donor);
+    }
 }
