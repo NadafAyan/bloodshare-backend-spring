@@ -22,4 +22,9 @@ public class CampService {
     public List<Camp> getAllCamps() {
         return campRepository.findAll();
     }
+
+    public Camp getCampById(String camp_name) {
+        Optional<Camp> camp = campRepository.findById(camp_name);
+        return camp.orElse(null);
+    }
 }

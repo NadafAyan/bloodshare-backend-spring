@@ -35,4 +35,16 @@ public class CampController {
         return ResponseEntity.status(HttpStatus.OK).body(campList);
     }
 
+    @GetMapping("/{camp_name}")
+    public ResponseEntity<Camp> getCampById(@PathVariable String camp_name) {
+        Camp camp = campService.getCampById(camp_name);
+
+        if(camp == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.FOUND).body(camp);
+    }
+
+
 }
