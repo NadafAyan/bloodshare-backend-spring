@@ -46,5 +46,17 @@ public class CampController {
         return ResponseEntity.status(HttpStatus.FOUND).body(camp);
     }
 
+    @PutMapping("/{camp_name}")
+    public ResponseEntity<Camp> updateCamp(@RequestBody Camp campToupdate, @PathVariable String camp_name) {
+        Camp updatedCamp = campService.updateCamp(campToupdate, camp_name);
 
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCamp);
+    }
+
+    @DeleteMapping("/{camp_name}")
+    public ResponseEntity<Camp> deleteCamp(@PathVariable String camp_name) {
+        campService.deleteCamp(camp_name);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 }

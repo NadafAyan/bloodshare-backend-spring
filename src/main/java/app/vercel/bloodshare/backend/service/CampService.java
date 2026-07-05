@@ -27,4 +27,20 @@ public class CampService {
         Optional<Camp> camp = campRepository.findById(camp_name);
         return camp.orElse(null);
     }
+
+    public Camp updateCamp(Camp campToUpdate, String camp_name) {
+        boolean exists = campRepository.existsById(camp_name);
+
+        if(!exists) {
+            return null;
+        }
+
+        Camp updatedCamp = campRepository.save(campToUpdate);
+        return updatedCamp;
+    }
+
+    public Camp deleteCamp(String camp_name) {
+        campRepository.deleteById(camp_name);
+        return null;
+    }
 }
