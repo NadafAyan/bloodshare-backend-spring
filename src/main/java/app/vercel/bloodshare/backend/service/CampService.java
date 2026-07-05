@@ -4,6 +4,7 @@ import app.vercel.bloodshare.backend.entity.Camp;
 import app.vercel.bloodshare.backend.repository.CampRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 @Service
 public class CampService {
@@ -15,7 +16,10 @@ public class CampService {
 
     public Camp createCamp(Camp receivedCamp) {
         receivedCamp.setDeleted(false);
-        Camp createdCamp = campRepository.save(receivedCamp);
-        return createdCamp;
+        return campRepository.save(receivedCamp);
+    }
+
+    public List<Camp> getAllCamps() {
+        return campRepository.findAll();
     }
 }
