@@ -1,95 +1,118 @@
 package app.vercel.bloodshare.backend.service;
-
+import app.vercel.bloodshare.backend.dto.DonorDTO;
+import app.vercel.bloodshare.backend.dto.DonorMatchDTO;
 import app.vercel.bloodshare.backend.entity.Donor;
+import app.vercel.bloodshare.backend.exception.ResourceNotFoundException;
 import app.vercel.bloodshare.backend.repository.DonorRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DonorService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DonorService.class);
     private final DonorRepository donorRepository;
 
     public DonorService(DonorRepository donorRepository) {
         this.donorRepository = donorRepository;
     }
 
-    public Donor createDonor(Donor donor) {
-        Donor createdDonor = donorRepository.save(donor);
-        return createdDonor;
-    }
+    public Donor registerDonor(Donor donor) {
+        logger.info("Registering new donor: {}", donor.getEmail());
 
-    public Donor getDonor(String email) {
-        Optional<Donor> receivedDonor = donorRepository.findById(email);
-
-        if(receivedDonor.isEmpty() || receivedDonor.get().isSoft_delete()) {
-            return null;
+        if (donorRepository.existsByEmail(donor.getEmail())) {
+            throw new IllegalArgumentException("Donor with email " + donor.getEmail() + " already exists");
         }
 
-        return receivedDonor.get();
+        return donorRepository.save(donor);
     }
 
-    public List<Donor> getAllDonors() {
-        List<Donor> donorsList = donorRepository.findAll();
-        List<Donor> finalList = new ArrayList<>();
-        for(Donor donors : donorsList) {
-            if(!donors.isSoft_delete()) {
-                finalList.add(donors);
-            }
-        }
-        return finalList;
+    public Donor getDonorById(Long id) {
+        logger.debug("Fetching donor with ID: {}", id);
+        return donorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Donor", "id", id));
     }
 
-    public Donor updateDonor(String email, Donor receivedDonor) {
-        boolean doesExists = donorRepository.existsById(email);
-
-        if(!doesExists) {
-            return null;
-        }
-
-        Optional<Donor> donar = donorRepository.findById(email);
-        Donor donorToSave = donar.get();
-
-        donorToSave.setFull_name(receivedDonor.getFull_name());
-        donorToSave.setAddress(receivedDonor.getAddress());
-        donorToSave.setAge(receivedDonor.getAge());
-        donorToSave.setCity(receivedDonor.getCity());
-        donorToSave.setAvailable(receivedDonor.isAvailable());
-        donorToSave.setBlood_group(receivedDonor.getBlood_group());
-        donorToSave.setEmergency_contact(receivedDonor.getEmergency_contact());
-        donorToSave.setPhone_number(receivedDonor.getPhone_number());
-
-        donorRepository.save(donorToSave);
-        return donorToSave;
+    public List<DonorDTO> getAllDonors() {
+        logger.debug("Fetching all donors");
+        return donorRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public Donor deleteDonor(String email) {
-        boolean donorExists = donorRepository.existsById(email);
-
-        if(!donorExists) {
-            return null;
-        }
-
-        Optional<Donor> donor = donorRepository.findById(email);
-        donorRepository.deleteById(email);
-
-        return donor.get();
+    public List<DonorDTO> getDonorsByBloodGroup(String bloodGroup) {
+        logger.debug("Fetching donors with blood group: {}", bloodGroup);
+        return donorRepository.findByBloodGroup(bloodGroup).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public Donor softDelete(String email) {
-        boolean donorExists = donorRepository.existsById(email);
+    public List<DonorDTO> getDonorsByCity(String city) {
+        logger.debug("Fetching donors in city: {}", city);
+        return donorRepository.findByCity(city).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
-        if(!donorExists) {
-            return null;
+    public List<DonorDTO> getDonorsByBloodGroupAndCity(String bloodGroup, String city) {
+        logger.debug("Fetching donors with blood group {} in city {}", bloodGroup, city);
+        return donorRepository.findByBloodGroupAndCity(bloodGroup, city).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<DonorMatchDTO> findMatchingDonors(String bloodGroup, String city) {
+        logger.info("Finding matching donors for blood group {} in city {}", bloodGroup, city);
+        return donorRepository.findMatchingDonors(bloodGroup, city);
+    }
+
+    public Donor updateDonor(Long id, Donor donorDetails) {
+        logger.info("Updating donor with ID: {}", id);
+
+        Donor existingDonor = getDonorById(id);
+        existingDonor.setFullName(donorDetails.getFullName());
+        existingDonor.setEmail(donorDetails.getEmail());
+        existingDonor.setPhone(donorDetails.getPhone());
+        existingDonor.setBloodGroup(donorDetails.getBloodGroup());
+        existingDonor.setCity(donorDetails.getCity());
+        existingDonor.setAddress(donorDetails.getAddress());
+        existingDonor.setAge(donorDetails.getAge());
+        existingDonor.setWeightKg(donorDetails.getWeightKg());
+        existingDonor.setLastDonationDate(donorDetails.getLastDonationDate());
+        existingDonor.setIsAvailable(donorDetails.getIsAvailable());
+
+        return donorRepository.update(existingDonor);
+    }
+
+    public void deleteDonor(Long id) {
+        logger.info("Deleting donor with ID: {}", id);
+        if (!donorRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Donor", "id", id);
         }
+        donorRepository.deleteById(id);
+    }
 
-        Optional<Donor> donor = donorRepository.findById(email);
-        Donor donorToSave = donor.get();
-        donorToSave.setSoft_delete(true);
-        donorRepository.save(donorToSave);
+    public long getDonorCount() {
+        return donorRepository.count();
+    }
 
-        return donor.get();
+    public long getDonorCountByBloodGroup(String bloodGroup) {
+        return donorRepository.countByBloodGroup(bloodGroup);
+    }
+
+    private DonorDTO convertToDTO(Donor donor) {
+        return new DonorDTO(
+                donor.getId(),
+                donor.getFullName(),
+                donor.getEmail(),
+                donor.getPhone(),
+                donor.getBloodGroup(),
+                donor.getCity(),
+                donor.getIsAvailable()
+        );
     }
 }
