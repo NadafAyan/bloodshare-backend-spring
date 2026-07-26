@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
-public class Camp {
+public class BloodCamp {
     @Id
     private String camp_name;
     private String organization;
