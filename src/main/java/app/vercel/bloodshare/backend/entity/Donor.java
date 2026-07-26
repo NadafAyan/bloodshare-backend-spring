@@ -1,112 +1,107 @@
 package app.vercel.bloodshare.backend.entity;
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table
 public class Donor {
-    @Column(name = "full_name")
-    private String full_name;
-    @Column(name = "age")
-    private int age;
-    @Id
-    @Column(name = "email")
+
+    private Long id;
+
+    @NotBlank(message = "Full name is required")
+    @Size(max = 100, message = "Name must be less than 100 characters")
+    private String fullName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
     private String email;
-    @Column(name = "phone_number")
-    private Long phone_number;
-    @Column(name = "blood_group")
-    private String blood_group;
-    @Column(name = "city")
+
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^[0-9+\\-\\s()]{10,20}$", message = "Invalid phone number")
+    private String phone;
+
+    @NotBlank(message = "Blood group is required")
+    @Pattern(regexp = "^(A|B|AB|O)[+-]$", message = "Invalid blood group")
+    private String bloodGroup;
+
+    @NotBlank(message = "City is required")
+    @Size(max = 50, message = "City must be less than 50 characters")
     private String city;
-    @Column(name = "address")
+
     private String address;
-    @Column(name = "emergency_contact")
-    private Long emergency_contact;
-    @Column(name = "available")
-    private boolean available;
-    @Column(name = "soft_delete")
-    private boolean soft_delete;
 
-    public boolean isSoft_delete() {
-        return soft_delete;
-    }
+    @Min(value = 18, message = "Donor must be at least 18 years old")
+    @Max(value = 65, message = "Donor must be at most 65 years old")
+    private Integer age;
 
-    public void setSoft_delete(boolean soft_delete) {
-        this.soft_delete = soft_delete;
-    }
+    @DecimalMin(value = "45.0", message = "Weight must be at least 45 kg")
+    private Double weightKg;
 
-    public String getFull_name() {
-        return full_name;
-    }
+    private LocalDate lastDonationDate;
 
-    public void setFull_name(String full_name) {
-        this.full_name = full_name;
-    }
+    private Boolean isAvailable = true;
 
-    public int getAge() {
-        return age;
-    }
+    // Constructors
+    public Donor() {}
 
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
+    public Donor(Long id, String fullName, String email, String phone,
+                 String bloodGroup, String city, String address,
+                 Integer age, Double weightKg, LocalDate lastDonationDate,
+                 Boolean isAvailable) {
+        this.id = id;
+        this.fullName = fullName;
         this.email = email;
-    }
-
-    public Long getPhone_number() {
-        return phone_number;
-    }
-
-    public void setPhone_number(Long phone_number) {
-        this.phone_number = phone_number;
-    }
-
-    public String getBlood_group() {
-        return blood_group;
-    }
-
-    public void setBlood_group(String blood_group) {
-        this.blood_group = blood_group;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
+        this.phone = phone;
+        this.bloodGroup = bloodGroup;
         this.city = city;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
         this.address = address;
+        this.age = age;
+        this.weightKg = weightKg;
+        this.lastDonationDate = lastDonationDate;
+        this.isAvailable = isAvailable;
     }
 
-    public Long getEmergency_contact() {
-        return emergency_contact;
-    }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setEmergency_contact(Long emergency_contact) {
-        this.emergency_contact = emergency_contact;
-    }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public boolean isAvailable() {
-        return available;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getBloodGroup() { return bloodGroup; }
+    public void setBloodGroup(String bloodGroup) { this.bloodGroup = bloodGroup; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
+
+    public Double getWeightKg() { return weightKg; }
+    public void setWeightKg(Double weightKg) { this.weightKg = weightKg; }
+
+    public LocalDate getLastDonationDate() { return lastDonationDate; }
+    public void setLastDonationDate(LocalDate lastDonationDate) { this.lastDonationDate = lastDonationDate; }
+
+    public Boolean getIsAvailable() { return isAvailable; }
+    public void setIsAvailable(Boolean isAvailable) { this.isAvailable = isAvailable; }
+
+    @Override
+    public String toString() {
+        return "Donor{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", bloodGroup='" + bloodGroup + '\'' +
+                ", city='" + city + '\'' +
+                ", isAvailable=" + isAvailable +
+                '}';
     }
 }

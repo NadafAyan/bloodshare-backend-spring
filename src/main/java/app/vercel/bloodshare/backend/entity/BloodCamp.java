@@ -1,74 +1,74 @@
 package app.vercel.bloodshare.backend.entity;
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
-import java.time.LocalDateTime;
-
-@Entity
 public class BloodCamp {
-    @Id
-    private String camp_name;
-    private String organization;
-    private LocalDateTime camp_date_time;
-    private int expected_donors;
-    private Long contact;
+
+    private Long id;
+
+    @NotBlank(message = "Camp name is required")
+    private String campName;
+
+    @NotBlank(message = "Organizer is required")
+    private String organizer;
+
+    @NotBlank(message = "City is required")
+    private String city;
+
+    @NotBlank(message = "Address is required")
+    private String address;
+
+    @NotNull(message = "Start date is required")
+    private LocalDate startDate;
+
+    private LocalDate endDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    @Pattern(regexp = "^[0-9+\\-\\s()]{10,20}$", message = "Invalid phone number")
+    private String contactPhone;
+
     private String description;
-    private boolean deleted;
+    private Boolean isActive = true;
 
-    public String getCamp_name() {
-        return camp_name;
-    }
+    // Constructors
+    public BloodCamp() {}
 
-    public void setCamp_name(String camp_name) {
-        this.camp_name = camp_name;
-    }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getOrganization() {
-        return organization;
-    }
+    public String getCampName() { return campName; }
+    public void setCampName(String campName) { this.campName = campName; }
 
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
+    public String getOrganizer() { return organizer; }
+    public void setOrganizer(String organizer) { this.organizer = organizer; }
 
-    public LocalDateTime getCamp_date_time() {
-        return camp_date_time;
-    }
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
 
-    public void setCamp_date_time(LocalDateTime camp_date_time) {
-        this.camp_date_time = camp_date_time;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
-    public int getExpected_donors() {
-        return expected_donors;
-    }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public void setExpected_donors(int expected_donors) {
-        this.expected_donors = expected_donors;
-    }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public Long getContact() {
-        return contact;
-    }
+    public LocalTime getStartTime() { return startTime; }
+    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
 
-    public void setContact(Long contact) {
-        this.contact = contact;
-    }
+    public LocalTime getEndTime() { return endTime; }
+    public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getContactPhone() { return contactPhone; }
+    public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 }
